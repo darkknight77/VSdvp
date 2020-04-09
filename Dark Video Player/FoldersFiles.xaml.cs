@@ -11,7 +11,9 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage;
+using Windows.Storage.AccessCache;
 using Windows.Storage.FileProperties;
+using Windows.Storage.Streams;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -31,6 +33,7 @@ namespace Dark_Video_Player
     public sealed partial class FoldersFiles : Page
     {
         public ObservableCollection<FolderModel> folders = new ObservableCollection<FolderModel>();
+        public IReadOnlyList<StorageFile> files;
 
         public FoldersFiles()
         {
@@ -42,12 +45,14 @@ namespace Dark_Video_Player
             await getFolder();
         }
 
+
+
         async private Task getFolder()
         {
             var folderPicker = new Windows.Storage.Pickers.FolderPicker();
             folderPicker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.Desktop;
 
-            foreach (string extension in FileExtensions.Image) {
+            foreach (string extension in FileExtensions.Video) {
                 folderPicker.FileTypeFilter.Add(extension);
             }
 
@@ -55,31 +60,52 @@ namespace Dark_Video_Player
             Windows.Storage.StorageFolder folder = await folderPicker.PickSingleFolderAsync();
             if (folder != null)
             {
+
+                FolderFileHelper.AddFolderToFutureAccessList(folder);
+
+                var  image = new Image();
+                var bitmapImage = new BitmapImage();
+
+                files = await folder.GetFilesAsync();
+
+                var videoList = VideoHelper.getVideosFromFolder(files,true);
                 
-                Windows.Storage.AccessCache.StorageApplicationPermissions.
-                FutureAccessList.AddOrReplace("PickedFolderToken", folder);
-
-                const ThumbnailMode thumbnailMode = ThumbnailMode.PicturesView;
-                const uint size = 200;
-                var  image = new BitmapImage();
-                using (StorageItemThumbnail thumbnail = await folder.GetThumbnailAsync(thumbnailMode, size))
+                if (videoList.Count > 0)
                 {
-                    if (thumbnail != null)
-                    {
-                       
-                        image.SetSource(thumbnail);
-
-                    }
+                    Debug.WriteLine("Trying to generate video thumbnail");
+                    bitmapImage = await ThumbnailHelper.getThumbnailForVideo(videoList[0]);
+                    image.Source = bitmapImage;
+                    Debug.WriteLine("Thumbnail set");
+                    
+                }
+                else {
+                    bitmapImage.UriSource = new Uri("ms-appx:///Assets/folder-icon.png");
+                    image.Source = bitmapImage;
                 }
 
-                        var files = await folder.GetFilesAsync();
-
-                var model = new FolderModel() { title = folder.DisplayName, path = folder.Path, fileCount = files.Count, thumbnail = image };
+                var count = await VideoHelper.GetVideoCountFromFolder(folder);
+                var model = new FolderModel() { title = folder.DisplayName, path = folder.Path, fileCount = count, imgSource = image.Source };
 
                 Debug.WriteLine(model.title + model.path + model.fileCount);
                 folders.Add(model);
 
             }
         }
+
+        private async void GridItemClick(object sender, ItemClickEventArgs e)
+        {
+            var item =   e.ClickedItem as FolderModel;
+            Debug.WriteLine(item.path);
+            StorageFolder folder = await StorageFolder.GetFolderFromPathAsync(item.path);
+            var token = FolderFileHelper.AddFolderToFutureAccessList(folder);            
+            var fileList = await FolderFileHelper.GetAllFilesFromFolder(folder);
+
+
+            if (fileList.Count > 0)
+            {
+                foreach (var file in fileList) Debug.WriteLine(file.Name);
+                MainPage.rootFrame.Navigate(typeof(FoldersFilesGrid),fileList);
+            }
         }
+    }
 }

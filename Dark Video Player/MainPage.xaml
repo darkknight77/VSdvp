@@ -9,7 +9,7 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
-        <muxc:NavigationView x:Name="nav" SelectionChanged="nav_SelectionChanged">
+        <muxc:NavigationView x:Name="nav" SelectionChanged="nav_SelectionChanged" IsBackButtonVisible="Visible" IsBackEnabled="True" BackRequested="nav_BackRequested">
             <muxc:NavigationView.MenuItems>
                 <muxc:NavigationViewItem Icon="Video" Content="Folders and Files" Tag="FoldersFiles" />
             </muxc:NavigationView.MenuItems>

@@ -122,7 +122,14 @@
     <Compile Include="FoldersFiles.xaml.cs">
       <DependentUpon>FoldersFiles.xaml</DependentUpon>
     </Compile>
+    <Compile Include="FoldersFilesGrid.xaml.cs">
+      <DependentUpon>FoldersFilesGrid.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Helper\FileExtensions.cs" />
+    <Compile Include="Helper\FolderFileHelper.cs" />
+    <Compile Include="Helper\ImageHelper.cs" />
+    <Compile Include="Helper\ThumbnailHelper.cs" />
+    <Compile Include="Helper\VideoHelper.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
@@ -136,7 +143,7 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assets\folder_icon.png">
+    <Content Include="Assets\folder-icon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Properties\Default.rd.xml" />
@@ -154,6 +161,10 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Page Include="FoldersFiles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="FoldersFilesGrid.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

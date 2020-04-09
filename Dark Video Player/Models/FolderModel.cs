@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 
 namespace Dark_Video_Player.Models
@@ -14,18 +16,18 @@ namespace Dark_Video_Player.Models
         public string title { get; set; }
         public string path { get; set; }
         public int fileCount { get; set; }
-        public BitmapImage thumbnail { get; set; }
+        public ImageSource imgSource { get; set; }
 
         public FolderModel()
         { 
         }
 
-        public FolderModel(string title, string path, int fileCount, BitmapImage image)
+        public FolderModel(string title, string path, int fileCount, ImageSource imgSource)
         {
             this.title = title;
             this.path = path;
             this.fileCount = fileCount;
-            this.thumbnail = thumbnail;
+            this.imgSource = imgSource;
 
         }
 

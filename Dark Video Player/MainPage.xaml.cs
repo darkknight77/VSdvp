@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -22,10 +23,18 @@ namespace Dark_Video_Player
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        public static MainPage Current;
+        public static Frame rootFrame;
         public MainPage()
         {
             this.InitializeComponent();
+            Current = this;
+            rootFrame = contentFrame;
+            this.NavigationCacheMode = NavigationCacheMode.Required;
+            contentFrame.Navigate(typeof(FoldersFiles));
         }
+
+
 
         private void nav_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
         {
@@ -39,9 +48,18 @@ namespace Dark_Video_Player
                     contentFrame.Navigate(typeof(FoldersFiles));
                     break;
 
+               
             }
 
 
+        }
+
+        private void nav_BackRequested(NavigationView sender, NavigationViewBackRequestedEventArgs args)
+        {
+            Debug.WriteLine("back");
+
+            if (contentFrame.CanGoBack) contentFrame.GoBack();
+            
         }
     }
 }
