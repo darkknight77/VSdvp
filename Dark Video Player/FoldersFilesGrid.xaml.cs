@@ -28,39 +28,51 @@ namespace Dark_Video_Player
     /// </summary>
     public sealed partial class FoldersFilesGrid : Page
     {
-        public ObservableCollection<VideoModel> videoFiles = new ObservableCollection<VideoModel>();
-        
-        IReadOnlyList<IStorageItem> files;
-       
+        public ObservableCollection<FolderVideoModel> videoFiles = new ObservableCollection<FolderVideoModel>();
+
+        //    IReadOnlyList<IStorageItem> files;
+
+        PathModel pathmodel;
+        public static FoldersFilesGrid FFGrid;
+        public static string[] pathTree;
         public FoldersFilesGrid()
         {
+            
             this.InitializeComponent();
+            FFGrid = this;
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-            files = (IReadOnlyList<IStorageItem>)e.Parameter;
+            var folderPath = (string)e.Parameter;
+            var files = await FolderFileHelper.GetAllFilesFromPath(folderPath);
+            pathmodel = new PathModel(folderPath);
+            this.DataContext = pathmodel;
             if (files.Count > 0)
             {
                 Debug.WriteLine("Bro im in");
-                populateGrid();     
+                populateGrid(files);
             }
         }
 
-        public async void populateGrid() {
+        public async void populateGrid(IReadOnlyList<IStorageItem> files)
+        {
+            videoFiles.Clear();
+            if (files.Count > 0)
+            {
 
-            if (files.Count>0) {
+                foreach (var item in files)
+                {
 
-                foreach (var item in files) {
-
-                    if (item is StorageFolder) {
+                    if (item is StorageFolder)
+                    {
                         var folder = (StorageFolder)item;
                         Debug.WriteLine($"{folder.DisplayName} is a folder");
                         var count = await VideoHelper.GetVideoCountFromFolder(folder);
                         var bitmap = new BitmapImage(new Uri("ms-appx:///Assets/folder-icon.png"));
-                        
-                        var model = new VideoModel(folder.DisplayName, count.ToString(), folder.Path, bitmap, null);
+                       
+                        var model = new FolderVideoModel(folder.DisplayName, count.ToString(), folder.Path, bitmap, null);
                         videoFiles.Add(model);
                     }
 
@@ -68,21 +80,66 @@ namespace Dark_Video_Player
                     {
                         var file = (StorageFile)item;
 
-                        if (VideoHelper.isVideo(file)) { 
+                        if (VideoHelper.isVideo(file))
+                        {
 
-                        var duration = await VideoHelper.GetVideoDuration(file);
-                        var bitmap = await ThumbnailHelper.getThumbnailForVideo(file);
-                        var model = new VideoModel(file.DisplayName, duration, file.Path, bitmap, null);
-                        videoFiles.Add(model);
+                            var duration = await VideoHelper.GetVideoDuration(file);
+                            var bitmap = await ThumbnailHelper.getThumbnailForVideo(file);
+                            var model = new FolderVideoModel(file.DisplayName, duration, file.Path, bitmap, null);
+                            videoFiles.Add(model);
 
                         }
                     }
-                    
+
                 }
-            
+
             }
-        
+
         }
 
+        private async void _grid_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            videoFiles.Clear();
+            var itemClicked = e.ClickedItem as FolderVideoModel;
+            StorageFolder folder = await StorageFolder.GetFolderFromPathAsync(itemClicked.videoPath);
+            pathmodel = new PathModel(folder.Path);
+            this.DataContext = pathmodel;
+            var fileList = await FolderFileHelper.GetAllFilesFromFolder(folder);
+            if (fileList.Count > 0)
+            {
+                foreach (var item in fileList)
+                {
+                    Debug.WriteLine(item.Name);
+
+
+                    if (item is StorageFolder)
+                    {
+                        var fol = (StorageFolder)item;
+                        Debug.WriteLine($"{folder.DisplayName} is a folder");
+                        var count = await VideoHelper.GetVideoCountFromFolder(fol);
+                        var bitmap = new BitmapImage(new Uri("ms-appx:///Assets/folder-icon.png"));
+                       
+                        var model = new FolderVideoModel(folder.DisplayName, count.ToString(), folder.Path, bitmap, null);
+                        videoFiles.Add(model);
+                    }
+
+                    else if (item is StorageFile)
+                    {
+                        var file = (StorageFile)item;
+
+                        if (VideoHelper.isVideo(file))
+                        {
+
+                            var duration = await VideoHelper.GetVideoDuration(file);
+                            var bitmap = await ThumbnailHelper.getThumbnailForVideo(file);
+                            var model = new FolderVideoModel(file.DisplayName, duration, file.Path, bitmap, null);
+                            videoFiles.Add(model);
+
+                        }
+                    }
+
+                }
+            }
+        }
     }
 }

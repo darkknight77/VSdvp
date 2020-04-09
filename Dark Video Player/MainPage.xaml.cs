@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Dark_Video_Player.Helper;
+using Dark_Video_Player.Models;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -6,6 +8,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -54,12 +57,41 @@ namespace Dark_Video_Player
 
         }
 
-        private void nav_BackRequested(NavigationView sender, NavigationViewBackRequestedEventArgs args)
+        private async void nav_BackRequested(NavigationView sender, NavigationViewBackRequestedEventArgs args)
         {
             Debug.WriteLine("back");
+            var path = PathModel.FPath;
+            Debug.WriteLine(path);
+           // folder = StorageFolder.GetFolderFromPathAsync(path);
+            var parentDir= Directory.GetParent(path);
+            Debug.WriteLine(parentDir);
+            Debug.WriteLine(parentDir.FullName);
+            var folder =  await  StorageFolder.GetFolderFromPathAsync(parentDir.FullName);
 
-            if (contentFrame.CanGoBack) contentFrame.GoBack();
-            
+            if (FolderFileHelper.IsStorageItemAccessible(folder))
+            {
+
+                var pathmodel = new PathModel(parentDir.FullName);
+                FoldersFilesGrid.FFGrid.DataContext = pathmodel;
+                var files = await FolderFileHelper.GetAllFilesFromFolder(folder);
+
+                // FoldersFilesGrid ff = new FoldersFilesGrid();
+                FoldersFilesGrid.FFGrid.populateGrid(files);
+                //ff.populateGrid(files);
+
+
+           
+                // if (contentFrame.CanGoBack) contentFrame.GoBack();
+
+
+            }
+            else {
+
+                Debug.WriteLine($"Access Denied for {folder.DisplayName}" );
+
+            }
+
+
         }
     }
 }

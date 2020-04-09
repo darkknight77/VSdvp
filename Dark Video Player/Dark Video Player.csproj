@@ -134,7 +134,8 @@
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Models\FolderModel.cs" />
-    <Compile Include="Models\VideoModel.cs" />
+    <Compile Include="Models\PathModel.cs" />
+    <Compile Include="Models\FolderVideoModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

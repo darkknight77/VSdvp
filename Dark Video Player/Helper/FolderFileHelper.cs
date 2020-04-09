@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.AccessCache;
+using Dark_Video_Player.Models;
 
 namespace Dark_Video_Player.Helper
 {
@@ -31,7 +32,8 @@ namespace Dark_Video_Player.Helper
 
         public static string AddFolderToFutureAccessList(IStorageItem item) {
            string token = Guid.NewGuid().ToString();
-           StorageApplicationPermissions.FutureAccessList.AddOrReplace(token, item);
+            StorageApplicationPermissions.FutureAccessList.AddOrReplace(token, item);
+            FoldersFiles.tokens.Add(token);
             return token;
         }
 
@@ -49,6 +51,13 @@ namespace Dark_Video_Player.Helper
          return await StorageApplicationPermissions.FutureAccessList.GetFileAsync(token);
         
             
+
+        }
+
+        public static bool IsStorageItemAccessible(IStorageItem item) {
+
+          return  StorageApplicationPermissions.FutureAccessList.CheckAccess(item);
+
 
         }
 

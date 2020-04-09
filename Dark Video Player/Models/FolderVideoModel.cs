@@ -10,19 +10,19 @@ using Windows.UI.Xaml.Media;
 
 namespace Dark_Video_Player.Models
 {
-    public class VideoModel 
+    public class FolderVideoModel 
     {
-        public VideoModel() { 
+        public FolderVideoModel() { 
         
         }
-        public VideoModel(string title, string path, int filecount, ImageSource imageSource )
+        public FolderVideoModel(string title, string path, int filecount, ImageSource imageSource )
         {
             this.title = title;
             this.videoPath = path;
             this.imageSource = imageSource;
             this.duration =  filecount.ToString();
         }
-        public VideoModel(string title, string duration, string videoPath, ImageSource imageSource, TimedTextSource subtitle)
+        public FolderVideoModel(string title, string duration, string videoPath, ImageSource imageSource, TimedTextSource subtitle)
         {
             this.title = title;
             this.duration = duration;

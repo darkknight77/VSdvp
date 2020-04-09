@@ -33,15 +33,30 @@ namespace Dark_Video_Player
     public sealed partial class FoldersFiles : Page
     {
         public ObservableCollection<FolderModel> folders = new ObservableCollection<FolderModel>();
+        public static HashSet<string> tokens = new HashSet<string>(); 
         public IReadOnlyList<StorageFile> files;
 
         public FoldersFiles()
         {
             this.InitializeComponent();
-            //folders = FolderModel.getFolders();
+            
         }
 
-        async private void AddFolder_Click(object sender, RoutedEventArgs e) { 
+        protected async override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            if (tokens.Count > 0)
+            {
+                foreach (var token in tokens.ToList())
+                {
+                   var folder = await FolderFileHelper.GetFolderForToken(token);
+                   PopulateGrid(folder);
+                   
+                }
+            }
+
+        }
+
+            async private void AddFolder_Click(object sender, RoutedEventArgs e) { 
             await getFolder();
         }
 
@@ -55,30 +70,32 @@ namespace Dark_Video_Player
             foreach (string extension in FileExtensions.Video) {
                 folderPicker.FileTypeFilter.Add(extension);
             }
-
+            StorageFolder folder = await folderPicker.PickSingleFolderAsync();
+            FolderFileHelper.AddFolderToFutureAccessList(folder);
+            PopulateGrid(folder);
             
-            Windows.Storage.StorageFolder folder = await folderPicker.PickSingleFolderAsync();
+        }
+
+        private async void PopulateGrid(StorageFolder folder) {
             if (folder != null)
             {
-
-                FolderFileHelper.AddFolderToFutureAccessList(folder);
-
-                var  image = new Image();
+                var image = new Image();
                 var bitmapImage = new BitmapImage();
 
                 files = await folder.GetFilesAsync();
 
-                var videoList = VideoHelper.getVideosFromFolder(files,true);
-                
+                var videoList = VideoHelper.getVideosFromFolder(files, true);
+
                 if (videoList.Count > 0)
                 {
                     Debug.WriteLine("Trying to generate video thumbnail");
                     bitmapImage = await ThumbnailHelper.getThumbnailForVideo(videoList[0]);
                     image.Source = bitmapImage;
                     Debug.WriteLine("Thumbnail set");
-                    
+
                 }
-                else {
+                else
+                {
                     bitmapImage.UriSource = new Uri("ms-appx:///Assets/folder-icon.png");
                     image.Source = bitmapImage;
                 }
@@ -90,6 +107,7 @@ namespace Dark_Video_Player
                 folders.Add(model);
 
             }
+
         }
 
         private async void GridItemClick(object sender, ItemClickEventArgs e)
@@ -97,14 +115,14 @@ namespace Dark_Video_Player
             var item =   e.ClickedItem as FolderModel;
             Debug.WriteLine(item.path);
             StorageFolder folder = await StorageFolder.GetFolderFromPathAsync(item.path);
-            var token = FolderFileHelper.AddFolderToFutureAccessList(folder);            
+           // var token = FolderFileHelper.AddFolderToFutureAccessList(folder);            
             var fileList = await FolderFileHelper.GetAllFilesFromFolder(folder);
 
 
             if (fileList.Count > 0)
             {
                 foreach (var file in fileList) Debug.WriteLine(file.Name);
-                MainPage.rootFrame.Navigate(typeof(FoldersFilesGrid),fileList);
+                MainPage.rootFrame.Navigate(typeof(FoldersFilesGrid),folder.Path);
             }
         }
     }
