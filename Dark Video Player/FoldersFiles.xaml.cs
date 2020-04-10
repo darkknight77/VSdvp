@@ -39,12 +39,12 @@ namespace Dark_Video_Player
         public FoldersFiles()
         {
             this.InitializeComponent();
-           //ApplicationData.Current.LocalSettings.Containers[LocalStorageHelper.FOLDER_CONTAINER].Values.Clear();
             LocalStorageHelper.CreateContainer();
         }
 
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
+
             tokens = LocalStorageHelper.GetAllItemsFromList();
          
             if (tokens.Count > 0)
@@ -75,8 +75,8 @@ namespace Dark_Video_Player
                 folderPicker.FileTypeFilter.Add(extension);
             }
             StorageFolder folder = await folderPicker.PickSingleFolderAsync();
-            var token = FolderFileHelper.AddFolderFileToFutureAccessList(folder);
-            if(LocalStorageHelper.AddItemToList(folder.Path,token))
+            var token = FolderFileHelper.AddFolderToFutureAccessList(folder);
+            LocalStorageHelper.AddItemToList(token);
             PopulateGrid(folder);
             pathTree.Clear();
         }
@@ -139,9 +139,10 @@ namespace Dark_Video_Player
             pathTree = subFolderPaths;
             var fileList = await FolderFileHelper.GetAllFilesFromFolder(folder);
 
+
             if (fileList.Count > 0)
             {
-              //  foreach (var file in fileList) Debug.WriteLine(file.Name);
+                foreach (var file in fileList) Debug.WriteLine(file.Name);
                 MainPage.rootFrame.Navigate(typeof(FoldersFilesGrid),folder.Path);
             }
         }

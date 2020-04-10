@@ -53,8 +53,8 @@ namespace Dark_Video_Player.Helper
             return paths;
         }
 
-        public static string AddFolderFileToFutureAccessList(IStorageItem item) {
-            string token = Guid.NewGuid().ToString();
+        public static string AddFolderToFutureAccessList(IStorageItem item) {
+           string token = Guid.NewGuid().ToString();
             StorageApplicationPermissions.FutureAccessList.AddOrReplace(token, item);
             FoldersFiles.tokens.Add(token);
             return token;
