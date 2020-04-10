@@ -33,22 +33,26 @@ namespace Dark_Video_Player
     public sealed partial class FoldersFiles : Page
     {
         public ObservableCollection<FolderModel> folders = new ObservableCollection<FolderModel>();
-        public static HashSet<string> tokens = new HashSet<string>(); 
+        public static List<string> tokens = new List<string>(); 
         public IReadOnlyList<StorageFile> files;
-
+        public static List<string> pathTree = new List<string>();
         public FoldersFiles()
         {
             this.InitializeComponent();
-            
+            LocalStorageHelper.CreateContainer();
         }
 
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
+
+            tokens = LocalStorageHelper.GetAllItemsFromList();
+         
             if (tokens.Count > 0)
             {
                 foreach (var token in tokens.ToList())
                 {
                    var folder = await FolderFileHelper.GetFolderForToken(token);
+                   
                    PopulateGrid(folder);
                    
                 }
@@ -71,9 +75,10 @@ namespace Dark_Video_Player
                 folderPicker.FileTypeFilter.Add(extension);
             }
             StorageFolder folder = await folderPicker.PickSingleFolderAsync();
-            FolderFileHelper.AddFolderToFutureAccessList(folder);
+            var token = FolderFileHelper.AddFolderToFutureAccessList(folder);
+            LocalStorageHelper.AddItemToList(token);
             PopulateGrid(folder);
-            
+            pathTree.Clear();
         }
 
         private async void PopulateGrid(StorageFolder folder) {
@@ -106,6 +111,20 @@ namespace Dark_Video_Player
                 Debug.WriteLine(model.title + model.path + model.fileCount);
                 folders.Add(model);
 
+
+               
+                Debug.WriteLine("********************");
+                
+                foreach (var path in pathTree) {
+                    Debug.WriteLine(path);
+                }
+                Debug.WriteLine("********************");
+
+               
+
+                
+                
+
             }
 
         }
@@ -115,7 +134,9 @@ namespace Dark_Video_Player
             var item =   e.ClickedItem as FolderModel;
             Debug.WriteLine(item.path);
             StorageFolder folder = await StorageFolder.GetFolderFromPathAsync(item.path);
-           // var token = FolderFileHelper.AddFolderToFutureAccessList(folder);            
+            // var token = FolderFileHelper.AddFolderToFutureAccessList(folder);        
+            var subFolderPaths = await FolderFileHelper.GetSubfoldersPathsFromFolder(folder);
+            pathTree = subFolderPaths;
             var fileList = await FolderFileHelper.GetAllFilesFromFolder(folder);
 
 

@@ -28,7 +28,30 @@ namespace Dark_Video_Player.Helper
 
         }
 
+        public async static Task<List<StorageFolder>> GetSubfoldersFromFolder(StorageFolder folder) {
 
+            var list = new List<StorageFolder>();
+            var items = await GetAllFilesFromFolder(folder);
+
+            foreach (var item in items) {
+                if (item.IsOfType(StorageItemTypes.Folder)) list.Add((StorageFolder)item);
+            }
+
+            return list;
+        }
+
+        public async static Task<List<string>> GetSubfoldersPathsFromFolder(StorageFolder folder)
+        {
+            var paths = new List<string>();
+            var list = await GetSubfoldersFromFolder(folder);
+
+            foreach (var subFolder in list) {
+
+                paths.Add(subFolder.Path);
+            }
+
+            return paths;
+        }
 
         public static string AddFolderToFutureAccessList(IStorageItem item) {
            string token = Guid.NewGuid().ToString();

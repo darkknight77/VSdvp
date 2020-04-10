@@ -50,26 +50,28 @@ namespace Dark_Video_Player
                 case "FoldersFiles":
                     contentFrame.Navigate(typeof(FoldersFiles));
                     break;
-
                
             }
-
 
         }
 
         private async void nav_BackRequested(NavigationView sender, NavigationViewBackRequestedEventArgs args)
         {
+            
             Debug.WriteLine("back");
             var path = PathModel.FPath;
             Debug.WriteLine(path);
-           // folder = StorageFolder.GetFolderFromPathAsync(path);
-            var parentDir= Directory.GetParent(path);
-            Debug.WriteLine(parentDir);
-            Debug.WriteLine(parentDir.FullName);
-            var folder =  await  StorageFolder.GetFolderFromPathAsync(parentDir.FullName);
 
-            if (FolderFileHelper.IsStorageItemAccessible(folder))
+            if (FoldersFiles.pathTree.Contains(path))
             {
+                Debug.WriteLine(path);
+                // folder = StorageFolder.GetFolderFromPathAsync(path);
+                var parentDir = Directory.GetParent(path);
+                Debug.WriteLine(parentDir);
+                Debug.WriteLine(parentDir.FullName);
+                var folder = await StorageFolder.GetFolderFromPathAsync(parentDir.FullName);
+
+
 
                 var pathmodel = new PathModel(parentDir.FullName);
                 FoldersFilesGrid.FFGrid.DataContext = pathmodel;
@@ -80,15 +82,18 @@ namespace Dark_Video_Player
                 //ff.populateGrid(files);
 
 
-           
+
                 // if (contentFrame.CanGoBack) contentFrame.GoBack();
 
 
             }
-            else {
-
-                Debug.WriteLine($"Access Denied for {folder.DisplayName}" );
-
+            else
+            {
+                
+                Debug.WriteLine($"Access Denied. Path not found");
+                FoldersFiles.pathTree.ToList().Clear();
+                if (contentFrame.CanGoBack) contentFrame.GoBack();
+               
             }
 
 

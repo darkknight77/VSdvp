@@ -128,6 +128,7 @@
     <Compile Include="Helper\FileExtensions.cs" />
     <Compile Include="Helper\FolderFileHelper.cs" />
     <Compile Include="Helper\ImageHelper.cs" />
+    <Compile Include="Helper\LocalStorageHelper.cs" />
     <Compile Include="Helper\ThumbnailHelper.cs" />
     <Compile Include="Helper\VideoHelper.cs" />
     <Compile Include="MainPage.xaml.cs">

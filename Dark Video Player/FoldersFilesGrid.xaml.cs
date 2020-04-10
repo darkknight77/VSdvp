@@ -34,7 +34,7 @@ namespace Dark_Video_Player
 
         PathModel pathmodel;
         public static FoldersFilesGrid FFGrid;
-        public static string[] pathTree;
+        
         public FoldersFilesGrid()
         {
             
@@ -47,6 +47,7 @@ namespace Dark_Video_Player
             base.OnNavigatedTo(e);
             var folderPath = (string)e.Parameter;
             var files = await FolderFileHelper.GetAllFilesFromPath(folderPath);
+           
             pathmodel = new PathModel(folderPath);
             this.DataContext = pathmodel;
             if (files.Count > 0)
