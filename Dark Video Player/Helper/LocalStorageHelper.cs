@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,12 +10,12 @@ namespace Dark_Video_Player.Helper
 {
    public class LocalStorageHelper
     {
-
+        static ApplicationDataContainer localSettings =  ApplicationData.Current.LocalSettings;
         public static void CreateContainer() {
 
-            if (!ApplicationData.Current.LocalSettings.Containers.ContainsKey("Folder_AccessList"))
+            if (!localSettings.Containers.ContainsKey("Folder_AccessList"))
             {
-                ApplicationData.Current.LocalSettings.CreateContainer("Folder_AccessList", ApplicationDataCreateDisposition.Always);
+                localSettings.CreateContainer("Folder_AccessList", ApplicationDataCreateDisposition.Always);
             }
             else
             {
@@ -22,17 +23,19 @@ namespace Dark_Video_Player.Helper
             }
         }
 
-        public static void AddItemToList(string token) {
-            ApplicationData.Current.LocalSettings.Containers["Folder_AccessList"].Values[token] = token;
+        public static void AddItemToList(string id,string token) {
+            
+            localSettings.Containers["Folder_AccessList"].Values[token] = id;
         }
 
         public static List<string> GetAllItemsFromList()
         {
             var list = new List<string>();
-
-            if (ApplicationData.Current.LocalSettings.Containers["Folder_AccessList"].Values.Count > 0)
+            Debug.WriteLine($" $$  {localSettings.Containers["Folder_AccessList"].Values.Count()}");
+            Debug.WriteLine($" $$ {localSettings.Containers["Folder_AccessList"].Values.Count}");
+            if (localSettings.Containers["Folder_AccessList"].Values.Count > 0)
             {
-            var iterator =  ApplicationData.Current.LocalSettings.Containers["Folder_AccessList"].Values.GetEnumerator();
+            var iterator = localSettings.Containers["Folder_AccessList"].Values.GetEnumerator();
 
                 while (iterator.MoveNext()) {
 

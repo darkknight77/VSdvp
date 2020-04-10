@@ -40,6 +40,7 @@ namespace Dark_Video_Player
         {
             this.InitializeComponent();
             LocalStorageHelper.CreateContainer();
+         // ApplicationData.Current.LocalSettings.Containers["Folder_AccessList"].Values.Clear();
         }
 
         protected async override void OnNavigatedTo(NavigationEventArgs e)
@@ -76,7 +77,7 @@ namespace Dark_Video_Player
             }
             StorageFolder folder = await folderPicker.PickSingleFolderAsync();
             var token = FolderFileHelper.AddFolderToFutureAccessList(folder);
-            LocalStorageHelper.AddItemToList(token);
+            LocalStorageHelper.AddItemToList(folder.FolderRelativeId,token);
             PopulateGrid(folder);
             pathTree.Clear();
         }
