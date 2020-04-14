@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Media.Core;
+using Windows.Media.Playback;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
@@ -22,19 +23,21 @@ namespace Dark_Video_Player.Models
             this.imageSource = imageSource;
             this.duration =  filecount.ToString();
         }
-        public FolderVideoModel(string title, string duration, string videoPath, ImageSource imageSource, TimedTextSource subtitle)
+        public FolderVideoModel(string title, string duration, string videoPath, ImageSource imageSource, TimedTextSource subtitle, MediaPlaybackItem mediaPlaybackItem)
         {
             this.title = title;
             this.duration = duration;
             this.videoPath = videoPath;
             this.imageSource = imageSource;
             this.subtitle = subtitle;
+            this.mediaPlaybackItem = mediaPlaybackItem;
         }
 
         public string title { get; set; }
         public string duration { get; set; }
         public string videoPath { get; set; }
         public ImageSource imageSource { get; set; }
+        public MediaPlaybackItem mediaPlaybackItem { get; set; }
         public TimedTextSource subtitle { get; set; }
         
 

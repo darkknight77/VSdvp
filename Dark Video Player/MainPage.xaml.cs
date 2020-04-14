@@ -1,5 +1,6 @@
 ﻿using Dark_Video_Player.Helper;
 using Dark_Video_Player.Models;
+using Dark_Video_Player.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -50,7 +51,10 @@ namespace Dark_Video_Player
                 case "FoldersFiles":
                     contentFrame.Navigate(typeof(FoldersFiles));
                     break;
-               
+                case "NowPlaying":
+                    contentFrame.Navigate(typeof(Now_Playing));
+                    break;
+                    
             }
 
         }
@@ -64,7 +68,7 @@ namespace Dark_Video_Player
 
             if (FoldersFiles.pathTree.Contains(path))
             {
-                Debug.WriteLine(path);
+                Debug.WriteLine("contains " +path);
                 // folder = StorageFolder.GetFolderFromPathAsync(path);
                 var parentDir = Directory.GetParent(path);
                 Debug.WriteLine(parentDir);
@@ -78,10 +82,12 @@ namespace Dark_Video_Player
                 var files = await FolderFileHelper.GetAllFilesFromFolder(folder);
 
                 // FoldersFilesGrid ff = new FoldersFilesGrid();
-                FoldersFilesGrid.FFGrid.populateGrid(files);
-                //ff.populateGrid(files);
-
-
+                var list = await FolderFilesViewModel.populateGrid(files);
+                FoldersFilesGrid.FFGrid.videoFiles.Clear();
+                foreach (var item in list)
+                {
+                    FoldersFilesGrid.FFGrid.videoFiles.Add(item);
+                }
 
                 // if (contentFrame.CanGoBack) contentFrame.GoBack();
 

@@ -10,40 +10,42 @@ namespace Dark_Video_Player.Helper
 {
    public class LocalStorageHelper
     {
+        public static readonly string ACCESS_LIST_CONTAINER = "Folder_Access_List_Container";
         static ApplicationDataContainer localSettings =  ApplicationData.Current.LocalSettings;
         public static void CreateContainer() {
 
-            if (!localSettings.Containers.ContainsKey("Folder_AccessList"))
+            if (!localSettings.Containers.ContainsKey(ACCESS_LIST_CONTAINER))
             {
-                localSettings.CreateContainer("Folder_AccessList", ApplicationDataCreateDisposition.Always);
+                localSettings.CreateContainer(ACCESS_LIST_CONTAINER, ApplicationDataCreateDisposition.Always);
             }
             else
             {
-                // ApplicationData.Current.LocalSettings.Containers["Folder_AccessList"].Values.Clear();
+                // ApplicationData.Current.LocalSettings.Containers[ACCESS_LIST_CONTAINER].Values.Clear();
             }
         }
 
         public static void AddItemToList(string id,string token) {
-            
-            localSettings.Containers["Folder_AccessList"].Values[token] = id;
+           
+            localSettings.Containers[ACCESS_LIST_CONTAINER].Values[token] = id;
         }
 
         public static List<string> GetAllItemsFromList()
         {
             var list = new List<string>();
-            Debug.WriteLine($" $$  {localSettings.Containers["Folder_AccessList"].Values.Count()}");
-            Debug.WriteLine($" $$ {localSettings.Containers["Folder_AccessList"].Values.Count}");
-            if (localSettings.Containers["Folder_AccessList"].Values.Count > 0)
+            Debug.WriteLine($" $$  {localSettings.Containers[ACCESS_LIST_CONTAINER].Values.Count()}");
+            Debug.WriteLine($" $$ {localSettings.Containers[ACCESS_LIST_CONTAINER].Values.Count}");
+            if (localSettings.Containers[ACCESS_LIST_CONTAINER].Values.Count > 0)
             {
-            var iterator = localSettings.Containers["Folder_AccessList"].Values.GetEnumerator();
+           
+            var iterator = localSettings.Containers[ACCESS_LIST_CONTAINER].Values.GetEnumerator();
 
                 while (iterator.MoveNext()) {
-
+                    
                     list.Add(iterator.Current.Key);
 
                 }
    
-             //   var tok = ApplicationData.Current.LocalSettings.Containers["Folder_AccessList"].Values.ElementAt(0).Value.ToString();
+             //   var tok = ApplicationData.Current.LocalSettings.Containers[ACCESS_LIST_CONTAINER].Values.ElementAt(0).Value.ToString();
              //   tokens.Add(tok);
             }
             return list;
